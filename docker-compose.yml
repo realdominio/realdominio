@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: realdominio_db
+    restart: always
+    environment:
+      POSTGRES_USER: realdominio
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-realdominio2025}
+      POSTGRES_DB: realdominio
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U realdominio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: realdominio_app
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://realdominio:${DB_PASSWORD:-realdominio2025}@postgres:5432/realdominio
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-troque-este-segredo-em-producao}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backups:/app/backups
+      - ./uploads:/app/uploads
+
+  backup:
+    image: postgres:16-alpine
+    container_name: realdominio_backup
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      PGPASSWORD: ${DB_PASSWORD:-realdominio2025}
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh
+    entrypoint: ["sh", "-c", "chmod +x /backup.sh && crond -f -d 8"]
+    command: sh -c "echo '0 0 * * * /backup.sh' | crontab - && crond -f -d 8"
+
+volumes:
+  postgres_data:
+    driver: local

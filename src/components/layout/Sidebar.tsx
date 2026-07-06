@@ -5,7 +5,19 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 
-const navItems = [
+interface NavItem {
+  href: string;
+  label: string;
+  icon: string;
+  somenteAdmin?: boolean;
+}
+
+interface NavGrupo {
+  grupo: string;
+  itens: NavItem[];
+}
+
+const navItems: NavGrupo[] = [
   {
     grupo: "Principal",
     itens: [

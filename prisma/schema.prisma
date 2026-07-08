@@ -1,4 +1,6 @@
-﻿
+// Real Domínio — Schema do Banco de Dados
+// Gerado em: 2025
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,9 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 
-// SISTEMA  Usurios, Setores, Permisses
-// 
+// ─────────────────────────────────────────
+// SISTEMA — Usuários, Setores, Permissões
+// ─────────────────────────────────────────
 
 enum PerfilGlobal {
   DIRETORIA
@@ -39,7 +41,7 @@ model Usuario {
   tarefasResp       Tarefa[]
   eventosResp       Evento[]
 
-  // FK reversas dos responsveis em Empresa
+  // FK reversas dos responsáveis em Empresa
   empresasFiscal    Empresa[]    @relation("RespFiscal")
   empresasContabil  Empresa[]    @relation("RespContabil")
   empresasDp        Empresa[]    @relation("RespDp")
@@ -81,9 +83,9 @@ model UsuarioSetor {
   @@map("usuario_setores")
 }
 
-// 
-// NCLEO  Empresa e Pessoa
-// 
+// ─────────────────────────────────────────
+// NÚCLEO — Empresa e Pessoa
+// ─────────────────────────────────────────
 
 enum StatusEmpresa {
   CADASTRO_INCOMPLETO
@@ -136,7 +138,7 @@ model Empresa {
   respSocietario  Usuario?      @relation("RespSocietario",fields: [respSocietId],   references: [id])
   respCarteira    Usuario?      @relation("RespCarteira",  fields: [respCarteiraId], references: [id])
 
-  // Mdulos setoriais (1:1)
+  // Módulos setoriais (1:1)
   fiscal          Fiscal?
   contabil        Contabil?
   dp              Dp?
@@ -144,7 +146,7 @@ model Empresa {
   relacionamento  Relacionamento?
   comercial       Comercial?
 
-  // Relaes
+  // Relações
   socios          EmpresaPessoa[]
   eventos         Evento[]
   tarefas         Tarefa[]
@@ -212,9 +214,9 @@ model PessoaDependente {
   @@map("pessoa_dependentes")
 }
 
-// 
-// MDULOS SETORIAIS
-// 
+// ─────────────────────────────────────────
+// MÓDULOS SETORIAIS
+// ─────────────────────────────────────────
 
 model Fiscal {
   id                   String           @id @default(uuid())
@@ -359,9 +361,9 @@ model Irpf {
   @@map("irpf")
 }
 
-// 
-// OPERACIONAL  Eventos, Tarefas, Obrigaes
-// 
+// ─────────────────────────────────────────
+// OPERACIONAL — Eventos, Tarefas, Obrigações
+// ─────────────────────────────────────────
 
 enum StatusEvento {
   NAO_INICIADO
@@ -461,9 +463,9 @@ model Tarefa {
   @@map("tarefas")
 }
 
-// 
-// OBRIGAES MENSAIS
-// 
+// ─────────────────────────────────────────
+// OBRIGAÇÕES MENSAIS
+// ─────────────────────────────────────────
 
 enum StatusObrigacao {
   NAO_INICIADO
@@ -527,9 +529,9 @@ model ObrigacaoInstancia {
   @@map("obrigacao_instancias")
 }
 
-// 
+// ─────────────────────────────────────────
 // DOCUMENTOS
-// 
+// ─────────────────────────────────────────
 
 model Documento {
   id              String    @id @default(uuid())
@@ -551,9 +553,9 @@ model Documento {
   @@map("documentos")
 }
 
-// 
-// HISTRICO DE OBSERVAES
-// 
+// ─────────────────────────────────────────
+// HISTÓRICO DE OBSERVAÇÕES
+// ─────────────────────────────────────────
 
 model ObsHistorico {
   id        String   @id @default(uuid())
@@ -567,9 +569,9 @@ model ObsHistorico {
   @@map("obs_historico")
 }
 
-// 
-// AUDITORIA E NOTIFICAES
-// 
+// ─────────────────────────────────────────
+// AUDITORIA E NOTIFICAÇÕES
+// ─────────────────────────────────────────
 
 model Auditoria {
   id            String   @id @default(uuid())

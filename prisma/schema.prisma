@@ -1,6 +1,3 @@
-// Real Dom├¡nio ÔÇö Schema do Banco de Dados
-// Gerado em: 2025
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,10 +6,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-// SISTEMA ÔÇö Usu├írios, Setores, Permiss├Áes
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
 enum PerfilGlobal {
   DIRETORIA
@@ -23,69 +16,57 @@ enum PerfilGlobal {
 }
 
 model Usuario {
-  id                String       @id @default(uuid())
-  nome              String
-  email             String       @unique
-  senhaHash         String
-  perfilGlobal      PerfilGlobal @default(OPERADOR)
-  ativo             Boolean      @default(true)
-  podeVerComercial  Boolean      @default(false)
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  deletedAt         DateTime?
-
-  setores           UsuarioSetor[]
-  auditoria         Auditoria[]
-  notificacoes      Notificacao[]
-  obrigacoesResp    ObrigacaoInstancia[]
-  tarefasResp       Tarefa[]
-  eventosResp       Evento[]
-
-  // FK reversas dos respons├íveis em Empresa
-  empresasFiscal    Empresa[]    @relation("RespFiscal")
-  empresasContabil  Empresa[]    @relation("RespContabil")
-  empresasDp        Empresa[]    @relation("RespDp")
-  empresasSociet    Empresa[]    @relation("RespSocietario")
-  empresasCarteira  Empresa[]    @relation("RespCarteira")
-
+  id               String       @id @default(uuid())
+  nome             String
+  email            String       @unique
+  senhaHash        String
+  perfilGlobal     PerfilGlobal @default(OPERADOR)
+  ativo            Boolean      @default(true)
+  podeVerComercial Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  deletedAt        DateTime?
+  setores          UsuarioSetor[]
+  auditoria        Auditoria[]
+  notificacoes     Notificacao[]
+  obrigacoesResp   ObrigacaoInstancia[]
+  tarefasResp      Tarefa[]
+  eventosResp      Evento[]
+  empresasFiscal   Empresa[] @relation("RespFiscal")
+  empresasContabil Empresa[] @relation("RespContabil")
+  empresasDp       Empresa[] @relation("RespDp")
+  empresasSociet   Empresa[] @relation("RespSocietario")
+  empresasCarteira Empresa[] @relation("RespCarteira")
   @@map("usuarios")
 }
 
 model Setor {
-  id          String   @id @default(uuid())
-  nome        String   @unique
-  descricao   String?
-  ativo       Boolean  @default(true)
-  ordem       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  usuarios          UsuarioSetor[]
+  id                 String              @id @default(uuid())
+  nome               String              @unique
+  descricao          String?
+  ativo              Boolean             @default(true)
+  ordem              Int                 @default(0)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  usuarios           UsuarioSetor[]
   obrigacaoTemplates ObrigacaoTemplate[]
-  tarefas           Tarefa[]
-  eventos           Evento[]
-  tiposEvento       TipoEvento[]
-
+  tarefas            Tarefa[]
+  eventos            Evento[]
+  tiposEvento        TipoEvento[]
   @@map("setores")
 }
 
 model UsuarioSetor {
-  id         String   @id @default(uuid())
-  usuarioId  String
-  setorId    String
-  papel      String   @default("membro") // membro | lider
-  createdAt  DateTime @default(now())
-
-  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
-  setor      Setor    @relation(fields: [setorId], references: [id])
-
+  id        String   @id @default(uuid())
+  usuarioId String
+  setorId   String
+  papel     String   @default("membro")
+  createdAt DateTime @default(now())
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  setor     Setor    @relation(fields: [setorId], references: [id])
   @@unique([usuarioId, setorId])
   @@map("usuario_setores")
 }
-
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-// N├ÜCLEO ÔÇö Empresa e Pessoa
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
 enum StatusEmpresa {
   CADASTRO_INCOMPLETO
@@ -108,119 +89,100 @@ enum RegimeTributario {
 }
 
 model Empresa {
-  id              String        @id @default(uuid())
-  codigoInterno   String        @unique
-  cnpj            String        @unique
-  razaoSocial     String
-  nomeFantasia    String?
-  municipio       String?
-  bairro          String?
-  estado          String?
-  dataAbertura    DateTime?
-  status          StatusEmpresa @default(CADASTRO_INCOMPLETO)
-  dataEntrada     DateTime?
-  obsCritica      String?
-  obsAtual        String?
-  ativo           Boolean       @default(true)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  deletedAt       DateTime?
-
-  respFiscalId    String?
-  respContabilId  String?
-  respDpId        String?
-  respSocietId    String?
-  respCarteiraId  String?
-
-  respFiscal      Usuario?      @relation("RespFiscal",    fields: [respFiscalId],   references: [id])
-  respContabil    Usuario?      @relation("RespContabil",  fields: [respContabilId], references: [id])
-  respDp          Usuario?      @relation("RespDp",        fields: [respDpId],       references: [id])
-  respSocietario  Usuario?      @relation("RespSocietario",fields: [respSocietId],   references: [id])
-  respCarteira    Usuario?      @relation("RespCarteira",  fields: [respCarteiraId], references: [id])
-
-  // M├│dulos setoriais (1:1)
-  fiscal          Fiscal?
-  contabil        Contabil?
-  dp              Dp?
-  societario      Societario?
-  relacionamento  Relacionamento?
-  comercial       Comercial?
-
-  // Rela├º├Áes
-  socios          EmpresaPessoa[]
-  eventos         Evento[]
-  tarefas         Tarefa[]
-  obrigacoes      ObrigacaoEmpresa[]
-  documentos      Documento[]
-  obsHistorico    ObsHistorico[]
-
+  id             String        @id @default(uuid())
+  codigoInterno  String        @unique
+  cnpj           String        @unique
+  razaoSocial    String
+  nomeFantasia   String?
+  municipio      String?
+  bairro         String?
+  estado         String?
+  dataAbertura   DateTime?
+  status         StatusEmpresa @default(CADASTRO_INCOMPLETO)
+  dataEntrada    DateTime?
+  obsCritica     String?
+  obsAtual       String?
+  ativo          Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+  respFiscalId   String?
+  respContabilId String?
+  respDpId       String?
+  respSocietId   String?
+  respCarteiraId String?
+  respFiscal     Usuario? @relation("RespFiscal",     fields: [respFiscalId],   references: [id])
+  respContabil   Usuario? @relation("RespContabil",   fields: [respContabilId], references: [id])
+  respDp         Usuario? @relation("RespDp",         fields: [respDpId],       references: [id])
+  respSocietario Usuario? @relation("RespSocietario", fields: [respSocietId],   references: [id])
+  respCarteira   Usuario? @relation("RespCarteira",   fields: [respCarteiraId], references: [id])
+  fiscal         Fiscal?
+  contabil       Contabil?
+  dp             Dp?
+  societario     Societario?
+  relacionamento Relacionamento?
+  comercial      Comercial?
+  socios         EmpresaPessoa[]
+  eventos        Evento[]
+  tarefas        Tarefa[]
+  obrigacoes     ObrigacaoEmpresa[]
+  documentos     Documento[]
+  obsHistorico   ObsHistorico[]
   @@map("empresas")
 }
 
 model Pessoa {
-  id            String    @id @default(uuid())
-  nome          String
-  cpf           String    @unique
+  id             String             @id @default(uuid())
+  nome           String
+  cpf            String             @unique
   dataNascimento DateTime?
-  estadoCivil   String?
-  telefone      String?
-  email         String?
-  ativo         Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
-
-  conjugeId     String?
-  conjuge       Pessoa?   @relation("Conjuge", fields: [conjugeId], references: [id])
-  conjugeDe     Pessoa[]  @relation("Conjuge")
-
-  dependentes   PessoaDependente[] @relation("Responsavel")
-  dependenteDe  PessoaDependente[] @relation("Dependente")
-
-  empresas      EmpresaPessoa[]
-  irpf          Irpf[]
-  documentos    Documento[]
-
+  estadoCivil    String?
+  telefone       String?
+  email          String?
+  ativo          Boolean            @default(true)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  deletedAt      DateTime?
+  conjugeId      String?
+  conjuge        Pessoa?            @relation("Conjuge", fields: [conjugeId], references: [id])
+  conjugeDe      Pessoa[]           @relation("Conjuge")
+  dependentes    PessoaDependente[] @relation("Responsavel")
+  dependenteDe   PessoaDependente[] @relation("Dependente")
+  empresas       EmpresaPessoa[]
+  irpf           Irpf[]
+  documentos     Documento[]
   @@map("pessoas")
 }
 
 model EmpresaPessoa {
-  id                    String   @id @default(uuid())
-  empresaId             String
-  pessoaId              String
-  percentualParticipacao Decimal? @db.Decimal(5, 2)
-  eAdministrador        Boolean  @default(false)
-  dataInicio            DateTime?
-  dataFim               DateTime?
-  createdAt             DateTime @default(now())
-
-  empresa  Empresa @relation(fields: [empresaId], references: [id])
-  pessoa   Pessoa  @relation(fields: [pessoaId], references: [id])
-
+  id                     String    @id @default(uuid())
+  empresaId              String
+  pessoaId               String
+  percentualParticipacao Decimal?  @db.Decimal(5, 2)
+  eAdministrador         Boolean   @default(false)
+  dataInicio             DateTime?
+  dataFim                DateTime?
+  createdAt              DateTime  @default(now())
+  empresa Empresa @relation(fields: [empresaId], references: [id])
+  pessoa  Pessoa  @relation(fields: [pessoaId],  references: [id])
   @@unique([empresaId, pessoaId])
   @@map("empresa_pessoas")
 }
 
 model PessoaDependente {
-  id             String   @id @default(uuid())
-  responsavelId  String
-  dependenteId   String
-  parentesco     String?
-
-  responsavel  Pessoa @relation("Responsavel", fields: [responsavelId], references: [id])
-  dependente   Pessoa @relation("Dependente",  fields: [dependenteId],  references: [id])
-
+  id            String  @id @default(uuid())
+  responsavelId String
+  dependenteId  String
+  parentesco    String?
+  responsavel Pessoa @relation("Responsavel", fields: [responsavelId], references: [id])
+  dependente  Pessoa @relation("Dependente",  fields: [dependenteId],  references: [id])
   @@unique([responsavelId, dependenteId])
   @@map("pessoa_dependentes")
 }
 
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-// M├ôDULOS SETORIAIS
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-
 model Fiscal {
-  id                   String           @id @default(uuid())
-  empresaId            String           @unique
+  id                   String            @id @default(uuid())
+  empresaId            String            @unique
   regimeTributario     RegimeTributario?
   inicioRegime         DateTime?
   ultimaRevisao        DateTime?
@@ -229,17 +191,15 @@ model Fiscal {
   inscricaoMunicipal   String?
   acessoEstado         String?
   acessoPrefeitura     String?
-  parcelamentoAtivo    Boolean          @default(false)
-  qtdParcelamentos     Int              @default(0)
+  parcelamentoAtivo    Boolean           @default(false)
+  qtdParcelamentos     Int               @default(0)
   orgaoParcelamento    String?
   situacaoParcelamento String?
-  possuiDebitos        Boolean          @default(false)
-  prefEnvioGuia        String?          // WHATSAPP | EMAIL | AMBOS
+  possuiDebitos        Boolean           @default(false)
+  prefEnvioGuia        String?
   diaPrefEnvio         Int?
-  updatedAt            DateTime         @updatedAt
-
-  empresa  Empresa @relation(fields: [empresaId], references: [id])
-
+  updatedAt            DateTime          @updatedAt
+  empresa Empresa @relation(fields: [empresaId], references: [id])
   @@map("fiscal")
 }
 
@@ -255,32 +215,28 @@ model Contabil {
   obsExtratos         String?
   possuiEmprestimo    Boolean   @default(false)
   possuiFinanciamento Boolean   @default(false)
-  ultimoResultado     String?   // LUCRO | PREJUIZO | EQUILIBRIO
+  ultimoResultado     String?
   competenciaResult   String?
-  confiabilidade      String?   // TOTAL | PARCIAL | NAO_SABEMOS | NAO
+  confiabilidade      String?
   updatedAt           DateTime  @updatedAt
-
-  empresa  Empresa @relation(fields: [empresaId], references: [id])
-
+  empresa Empresa @relation(fields: [empresaId], references: [id])
   @@map("contabil")
 }
 
 model Dp {
-  id                  String   @id @default(uuid())
-  empresaId           String   @unique
-  possuiFuncionarios  Boolean  @default(false)
-  qtdFuncionarios     Int      @default(0)
-  possuiProlabore     Boolean  @default(false)
-  qtdSociosfolha      Int      @default(0)
-  possuiInssPatronal  Boolean  @default(false)
-  possuiPisFolha      Boolean  @default(false)
-  rat                 Decimal? @db.Decimal(5, 2)
-  fap                 Decimal? @db.Decimal(5, 4)
-  terceiros           Boolean  @default(false)
-  updatedAt           DateTime @updatedAt
-
-  empresa  Empresa @relation(fields: [empresaId], references: [id])
-
+  id                 String   @id @default(uuid())
+  empresaId          String   @unique
+  possuiFuncionarios Boolean  @default(false)
+  qtdFuncionarios    Int      @default(0)
+  possuiProlabore    Boolean  @default(false)
+  qtdSociosfolha     Int      @default(0)
+  possuiInssPatronal Boolean  @default(false)
+  possuiPisFolha     Boolean  @default(false)
+  rat                Decimal? @db.Decimal(5, 2)
+  fap                Decimal? @db.Decimal(5, 4)
+  terceiros          Boolean  @default(false)
+  updatedAt          DateTime @updatedAt
+  empresa Empresa @relation(fields: [empresaId], references: [id])
   @@map("dp")
 }
 
@@ -290,8 +246,8 @@ model Societario {
   contratoAtualizado    Boolean   @default(false)
   ultimaAlteracaoContr  DateTime?
   certificadoDigital    Boolean   @default(false)
-  tipoCertificado       String?   // A1 | A3
-  situacaoCertificado   String?   // ATIVO | VENCIDO | A_VENCER
+  tipoCertificado       String?
+  situacaoCertificado   String?
   vencimentoCertificado DateTime?
   procuracaoRF          Boolean   @default(false)
   procuracaoEstado      Boolean   @default(false)
@@ -302,32 +258,28 @@ model Societario {
   licencas              String?
   alvaras               String?
   updatedAt             DateTime  @updatedAt
-
-  empresa  Empresa @relation(fields: [empresaId], references: [id])
-
+  empresa Empresa @relation(fields: [empresaId], references: [id])
   @@map("societario")
 }
 
 model Relacionamento {
-  id                 String    @id @default(uuid())
-  empresaId          String    @unique
-  ultimoContato      DateTime?
-  ultimaReuniao      DateTime?
-  ultimaVisita       DateTime?
-  formaPrefContato   String?   // WHATSAPP | EMAIL | TELEFONE | PRESENCIAL
-  tempoResposta      String?   // RAPIDO | MEDIO | LENTO
-  perfilCliente      String?   // ORGANIZADO | DESORGANIZADO | TECNICO | etc
-  updatedAt          DateTime  @updatedAt
-
-  empresa  Empresa @relation(fields: [empresaId], references: [id])
-
+  id               String    @id @default(uuid())
+  empresaId        String    @unique
+  ultimoContato    DateTime?
+  ultimaReuniao    DateTime?
+  ultimaVisita     DateTime?
+  formaPrefContato String?
+  tempoResposta    String?
+  perfilCliente    String?
+  updatedAt        DateTime  @updatedAt
+  empresa Empresa @relation(fields: [empresaId], references: [id])
   @@map("relacionamento")
 }
 
 model Comercial {
   id                String    @id @default(uuid())
   empresaId         String    @unique
-  origem            String?   // GOOGLE | INSTAGRAM | INDICACAO | etc
+  origem            String?
   quemIndicou       String?
   motivoContratacao String?
   honorarios        Decimal?  @db.Decimal(10, 2)
@@ -336,34 +288,26 @@ model Comercial {
   motivoSaida       String?
   descricaoSaida    String?
   updatedAt         DateTime  @updatedAt
-
-  empresa  Empresa @relation(fields: [empresaId], references: [id])
-
+  empresa Empresa @relation(fields: [empresaId], references: [id])
   @@map("comercial")
 }
 
 model Irpf {
-  id                   String   @id @default(uuid())
-  pessoaId             String
-  ano                  Int
-  declaracaoEntregue   Boolean  @default(false)
-  imoveis              String?
-  participacoes        String?
-  investimentos        String?
-  patrimonio           String?
-  contasBancarias      String?
-  observacoes          String?
-  updatedAt            DateTime @updatedAt
-
-  pessoa  Pessoa @relation(fields: [pessoaId], references: [id])
-
+  id                 String   @id @default(uuid())
+  pessoaId           String
+  ano                Int
+  declaracaoEntregue Boolean  @default(false)
+  imoveis            String?
+  participacoes      String?
+  investimentos      String?
+  patrimonio         String?
+  contasBancarias    String?
+  observacoes        String?
+  updatedAt          DateTime @updatedAt
+  pessoa Pessoa @relation(fields: [pessoaId], references: [id])
   @@unique([pessoaId, ano])
   @@map("irpf")
 }
-
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-// OPERACIONAL ÔÇö Eventos, Tarefas, Obriga├º├Áes
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
 enum StatusEvento {
   NAO_INICIADO
@@ -376,40 +320,35 @@ enum StatusEvento {
 }
 
 model TipoEvento {
-  id       String  @id @default(uuid())
-  nome     String
-  setorId  String?
-  ativo    Boolean @default(true)
-
-  setor    Setor?  @relation(fields: [setorId], references: [id])
-  eventos  Evento[]
-
+  id      String  @id @default(uuid())
+  nome    String
+  setorId String?
+  ativo   Boolean @default(true)
+  setor   Setor?  @relation(fields: [setorId], references: [id])
+  eventos Evento[]
   @@map("tipos_evento")
 }
 
 model Evento {
-  id                String       @id @default(uuid())
-  empresaId         String
-  tipoEventoId      String?
-  respGeralId       String?
-  setorAtualId      String?
-  respAtualId       String?
-  dataAbertura      DateTime     @default(now())
-  prazo             DateTime?
-  status            StatusEvento @default(NAO_INICIADO)
-  observacoes       String?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  deletedAt         DateTime?
-
-  empresa     Empresa     @relation(fields: [empresaId],    references: [id])
-  tipoEvento  TipoEvento? @relation(fields: [tipoEventoId], references: [id])
-  setorAtual  Setor?      @relation(fields: [setorAtualId], references: [id])
-  respAtual   Usuario?    @relation(fields: [respAtualId],  references: [id])
-
-  historico   EventoHistorico[]
-  tarefas     Tarefa[]
-
+  id           String       @id @default(uuid())
+  empresaId    String
+  tipoEventoId String?
+  respGeralId  String?
+  setorAtualId String?
+  respAtualId  String?
+  dataAbertura DateTime     @default(now())
+  prazo        DateTime?
+  status       StatusEvento @default(NAO_INICIADO)
+  observacoes  String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+  empresa    Empresa     @relation(fields: [empresaId],    references: [id])
+  tipoEvento TipoEvento? @relation(fields: [tipoEventoId], references: [id])
+  setorAtual Setor?      @relation(fields: [setorAtualId], references: [id])
+  respAtual  Usuario?    @relation(fields: [respAtualId],  references: [id])
+  historico  EventoHistorico[]
+  tarefas    Tarefa[]
   @@map("eventos")
 }
 
@@ -421,9 +360,7 @@ model EventoHistorico {
   descricao      String
   statusAnterior String?
   statusNovo     String?
-
-  evento   Evento   @relation(fields: [eventoId], references: [id])
-
+  evento Evento @relation(fields: [eventoId], references: [id])
   @@map("evento_historico")
 }
 
@@ -438,34 +375,28 @@ enum StatusTarefa {
 }
 
 model Tarefa {
-  id             String       @id @default(uuid())
-  empresaId      String
-  eventoId       String?
-  setorId        String?
-  responsavelId  String?
-  titulo         String
-  descricao      String?
-  dataInicio     DateTime?
-  prazo          DateTime?
-  dataConclusao  DateTime?
-  status         StatusTarefa @default(NAO_INICIADO)
-  motivoAtraso   String?
-  observacoes    String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  deletedAt      DateTime?
-
-  empresa      Empresa   @relation(fields: [empresaId],    references: [id])
-  evento       Evento?   @relation(fields: [eventoId],     references: [id])
-  setor        Setor?    @relation(fields: [setorId],      references: [id])
-  responsavel  Usuario?  @relation(fields: [responsavelId],references: [id])
-
+  id            String       @id @default(uuid())
+  empresaId     String
+  eventoId      String?
+  setorId       String?
+  responsavelId String?
+  titulo        String
+  descricao     String?
+  dataInicio    DateTime?
+  prazo         DateTime?
+  dataConclusao DateTime?
+  status        StatusTarefa @default(NAO_INICIADO)
+  motivoAtraso  String?
+  observacoes   String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+  empresa     Empresa  @relation(fields: [empresaId],     references: [id])
+  evento      Evento?  @relation(fields: [eventoId],      references: [id])
+  setor       Setor?   @relation(fields: [setorId],       references: [id])
+  responsavel Usuario? @relation(fields: [responsavelId], references: [id])
   @@map("tarefas")
 }
-
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-// OBRIGA├ç├òES MENSAIS
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
 enum StatusObrigacao {
   NAO_INICIADO
@@ -480,82 +411,65 @@ enum StatusObrigacao {
 }
 
 model ObrigacaoTemplate {
-  id          String   @id @default(uuid())
-  setorId     String
-  nome        String
-  descricao   String?
-  ativo       Boolean  @default(true)
-  ordem       Int      @default(0)
-  createdAt   DateTime @default(now())
-
-  setor       Setor    @relation(fields: [setorId], references: [id])
-  empresas    ObrigacaoEmpresa[]
-
+  id        String   @id @default(uuid())
+  setorId   String
+  nome      String
+  descricao String?
+  ativo     Boolean  @default(true)
+  ordem     Int      @default(0)
+  createdAt DateTime @default(now())
+  setor    Setor              @relation(fields: [setorId],   references: [id])
+  empresas ObrigacaoEmpresa[]
   @@map("obrigacao_templates")
 }
 
 model ObrigacaoEmpresa {
-  id           String   @id @default(uuid())
-  empresaId    String
-  templateId   String
-  setorId      String?
-  ativa        Boolean  @default(true)
-  createdAt    DateTime @default(now())
-
-  empresa   Empresa           @relation(fields: [empresaId], references: [id])
-  template  ObrigacaoTemplate @relation(fields: [templateId], references: [id])
-
-  instancias  ObrigacaoInstancia[]
-
+  id         String   @id @default(uuid())
+  empresaId  String
+  templateId String
+  setorId    String?
+  ativa      Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  empresa  Empresa           @relation(fields: [empresaId],  references: [id])
+  template ObrigacaoTemplate @relation(fields: [templateId], references: [id])
+  instancias ObrigacaoInstancia[]
   @@unique([empresaId, templateId])
   @@map("obrigacao_empresas")
 }
 
 model ObrigacaoInstancia {
-  id                String          @id @default(uuid())
+  id                 String          @id @default(uuid())
   obrigacaoEmpresaId String
-  responsavelId     String?
-  competencia       String          // formato: "YYYY-MM"
-  status            StatusObrigacao @default(NAO_INICIADO)
-  dataConclusao     DateTime?
-  observacao        String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-
-  obrigacaoEmpresa  ObrigacaoEmpresa @relation(fields: [obrigacaoEmpresaId], references: [id])
-  responsavel       Usuario?         @relation(fields: [responsavelId],      references: [id])
-
+  responsavelId      String?
+  competencia        String
+  status             StatusObrigacao @default(NAO_INICIADO)
+  dataConclusao      DateTime?
+  observacao         String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  obrigacaoEmpresa ObrigacaoEmpresa @relation(fields: [obrigacaoEmpresaId], references: [id])
+  responsavel      Usuario?         @relation(fields: [responsavelId],      references: [id])
   @@unique([obrigacaoEmpresaId, competencia])
   @@map("obrigacao_instancias")
 }
 
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-// DOCUMENTOS
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-
 model Documento {
-  id              String    @id @default(uuid())
-  empresaId       String?
-  pessoaId        String?
-  tipoDocumento   String
-  nomeArquivo     String
-  urlStorage      String
-  tamanhoBytes    Int?
-  uploadedById    String?
-  dataUpload      DateTime  @default(now())
-  validade        DateTime?
-  observacoes     String?
-  deletedAt       DateTime?
-
-  empresa  Empresa? @relation(fields: [empresaId], references: [id])
-  pessoa   Pessoa?  @relation(fields: [pessoaId],  references: [id])
-
+  id            String    @id @default(uuid())
+  empresaId     String?
+  pessoaId      String?
+  tipoDocumento String
+  nomeArquivo   String
+  urlStorage    String
+  tamanhoBytes  Int?
+  uploadedById  String?
+  dataUpload    DateTime  @default(now())
+  validade      DateTime?
+  observacoes   String?
+  deletedAt     DateTime?
+  empresa Empresa? @relation(fields: [empresaId], references: [id])
+  pessoa  Pessoa?  @relation(fields: [pessoaId],  references: [id])
   @@map("documentos")
 }
-
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-// HIST├ôRICO DE OBSERVA├ç├òES
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
 model ObsHistorico {
   id        String   @id @default(uuid())
@@ -563,44 +477,34 @@ model ObsHistorico {
   usuarioId String?
   dataHora  DateTime @default(now())
   texto     String
-
-  empresa  Empresa @relation(fields: [empresaId], references: [id])
-
+  empresa Empresa @relation(fields: [empresaId], references: [id])
   @@map("obs_historico")
 }
-
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-// AUDITORIA E NOTIFICA├ç├òES
-// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
 model Auditoria {
   id            String   @id @default(uuid())
   usuarioId     String?
-  entidadeTipo  String   // "empresa" | "comercial" | "irpf" | etc
+  entidadeTipo  String
   entidadeId    String
   campo         String?
   valorAnterior String?
   valorNovo     String?
-  acao          String   // "create" | "update" | "delete" | "view"
+  acao          String
   dataHora      DateTime @default(now())
   ip            String?
-
-  usuario  Usuario? @relation(fields: [usuarioId], references: [id])
-
+  usuario Usuario? @relation(fields: [usuarioId], references: [id])
   @@map("auditoria")
 }
 
 model Notificacao {
-  id            String   @id @default(uuid())
-  usuarioId     String
-  titulo        String
-  mensagem      String
-  lida          Boolean  @default(false)
-  entidadeTipo  String?
-  entidadeId    String?
-  dataHora      DateTime @default(now())
-
-  usuario  Usuario @relation(fields: [usuarioId], references: [id])
-
+  id           String   @id @default(uuid())
+  usuarioId    String
+  titulo       String
+  mensagem     String
+  lida         Boolean  @default(false)
+  entidadeTipo String?
+  entidadeId   String?
+  dataHora     DateTime @default(now())
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
   @@map("notificacoes")
 }

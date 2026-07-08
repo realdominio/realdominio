@@ -1,6 +1,4 @@
-﻿// Real Domnio  Schema do Banco de Dados
-// Gerado em: 2025
-
+﻿
 generator client {
   provider = "prisma-client-js"
 }
